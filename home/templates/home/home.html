@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="col-md-4" align="middle">
+        {% if user.userprofile.image %}
+        <img src="{{ user.userprofile.image.url }}"   align="middle" class="img-circle" width="200" height="200">
+        <h3 ><b>{{ user.get_full_name }}</b><br>  <small>@{{ user.username }}</small></h3>
+        {% endif %}
+
+        <table style="width:70%">
+            <tr style="color: #696969;">
+                <th align="center"><h4>Posts</h4></th>
+                <th align="center"><h4>Followers</h4></th>
+                <th align="center"><h4>Following</h4></th>
+            </tr>
+            <tr style="color: #808080;">
+                <td align="center"><b>68</b></td>
+                <td align="center"><b>50</b></td>
+                <td align="center"><b>75</b></td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h3>News Feed...</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.post }}
+            <br>
+            <button type="submit" class="btn btn-info btn-sm">Share</button>
+        </form>
+        <br>
+        {% for post in posts %}
+            {% if post.user in friends or post.user.id is request.user.id %}
+
+            <div>
+                <table style="width:100%">
+                    <tr>
+                        <td colspan="3">
+                            <p style="float: left;"><img src="{{ post.user.userprofile.image.url }}"
+                                                     height="25px" width="25px" border="1px" class="img-circle">&nbsp
+                            </p>
+                            <p>
+                                <h6 ><b>{{ post.user.get_full_name }}</b> &nbsp <small>@{{ post.user.username }}
+                                        &nbsp {{ post.created }}</small></h6>
+                            </p>
+                        </td>
+                     </tr>
+                    <tr>
+                        <td colspan="3">
+                            <h5>{{ post.post }}</h5><br>
+                        </td>
+                     </tr>
+                    <tr style="color: #808080;">
+                        <td colspan="1" align="center">
+                             <a href="{% url 'home:home' %}">
+                                <span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span>
+                                 {% if post.likes %}
+                                    {{ post.likes }}
+                                {% endif %}
+                             </a>
+                        </td>
+                        <td colspan="1" align="center">
+                            <a href="{% url 'home:home' %}">
+                                <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+                                {% if post.retweets %}
+                                    {{ post.retweets }}
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td colspan="1" align="center">
+                             <a href="{% url 'home:home' %}">
+                                <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+                             </a>
+                        </td><br>
+                    </tr>
+                </table>
+            </div>
+           {% endif%}
+        {% endfor %}
+    </div>
+    <div class="col-md-4" >
+        <h3 style="color: #808080;">Suggestions</h3><br>
+        {% for user in users %}
+            {% if not user in friends %}
+                <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
+                    <h4>{{ user.get_full_name }}  <small>@{{ user.username }}</small></h4>
+                </a>
+                <a href="{% url 'home:change_friends' operation='add' pk=user.pk %}">
+                <button type="button" class="btn btn-success btn-xs">Follow</button>
+                </a>
+            {% endif %}
+        {% endfor %}
+        <h3 style="color: #808080;">Followers</h3><br>
+        {% for friend in friends %}
+            <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
+               <h4>{{ friend.get_full_name }}  <small>@{{ friend.username }}</small></h4>
+            </a>
+            <a href="{% url 'home:change_friends' operation='remove' pk=friend.pk %}">
+            <button type="button" class="btn btn-danger btn-xs">Unfollow</button>
+            </a>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+#http://placekitten.com/g/200/200
