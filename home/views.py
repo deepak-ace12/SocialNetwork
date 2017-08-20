@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from home.forms import HomeForm
-from home.models import Post, Friend
+from home.models import Post, Friend, Retweets
 from django.contrib.auth.models import User
 
 class HomeView(TemplateView):
@@ -15,11 +15,11 @@ class HomeView(TemplateView):
         friend, created = Friend.objects.get_or_create(current_user=request.user)
         friends = friend.users.all()
         userpost = Post.objects.filter(user=user).order_by('-created')
-
+        retweets = Retweets.objects.all()
         args = {
             'form':form, 'posts': posts,
             'users':users, 'friends': friends,
-            'userpost':userpost,
+            'userpost':userpost, 'retweets':retweets,
         }
         return render(request, self.template_name, args)
 
@@ -45,4 +45,12 @@ def change_friends(request, operation, pk):
         Friend.make_friend(request.user, new_friend)
     elif operation == 'remove':
         Friend.lose_friend(request.user, new_friend)
+    return redirect('home:home')
+
+def retweet(request, action, pk):
+    post = Post.objects.get(pk=pk)
+    if action == 'positive':
+        Retweets.retweet_positive(request.user, post)
+    elif action == 'negative':
+        Retweets.retweet_positive(request.user, post)
     return redirect('home:home')

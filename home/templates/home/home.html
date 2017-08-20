@@ -34,7 +34,7 @@
             {% if post.user in friends or post.user.id is request.user.id %}
 
             <div>
-                <table style="width:100%">
+                <table style="width:100%;">
                     <tr>
                         <td colspan="3">
                             <p style="float: left;"><img src="{{ post.user.userprofile.image.url }}"
@@ -54,18 +54,21 @@
                     <tr style="color: #808080;">
                         <td colspan="1" align="center">
                              <a href="{% url 'home:home' %}">
-                                <span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span>
+                                <span class="glyphicon glyphicon-heart-empty" aria-hidden="true" style="color:grey">
+                                </span>
                                  {% if post.likes %}
                                     {{ post.likes }}
                                 {% endif %}
                              </a>
                         </td>
                         <td colspan="1" align="center">
-                            <a href="{% url 'home:home' %}">
+                            <a href="{% url 'home:retweet' action='positive' pk=post.pk %}">
                                 <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
-                                {% if post.retweets %}
-                                    {{ post.retweets }}
-                                {% endif %}
+                                 {% for tweets in retweets %}
+                                   {% if tweets.current_post.id is post.id %}
+                                        {{ tweets.retweeters.all.count }}
+                                    {% endif %}
+                                {% endfor %}
                             </a>
                         </td>
                         <td colspan="1" align="center">
