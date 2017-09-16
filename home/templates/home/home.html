@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="container">
+<div class="container" >
     <div class="col-md-4" align="middle">
         {% if user.userprofile.image %}
         <img src="{{ user.userprofile.image.url }}"   align="middle" class="img-circle" width="200" height="200">
@@ -15,9 +15,9 @@
                 <th align="center"><h4>Following</h4></th>
             </tr>
             <tr style="color: #808080;">
-                <td align="center"><b>68</b></td>
-                <td align="center"><b>50</b></td>
-                <td align="center"><b>75</b></td>
+                <td align="center"><b>{{ userpost.all.count }}</b></td>
+                <td align="center"><b>{{ followers.all.count }}</b></td>
+                <td align="center"><b>{{ following.all.count }}</b></td>
             </tr>
         </table>
     </div>
@@ -31,7 +31,7 @@
         </form>
         <br>
         {% for post in posts %}
-            {% if post.user in friends or post.user.id is request.user.id %}
+            {% if post.user in following or post.user.id is request.user.id %}
 
             <div>
                 <table style="width:100%;">
@@ -54,7 +54,7 @@
                     <tr style="color: #808080;">
                         <td colspan="1" align="center">
                              <a href="{% url 'home:home' %}">
-                                <span class="glyphicon glyphicon-heart-empty" aria-hidden="true" style="color:grey">
+                                <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">
                                 </span>
                                  {% if post.likes %}
                                     {{ post.likes }}
@@ -64,7 +64,7 @@
                         <td colspan="1" align="center">
                             <a href="{% url 'home:retweet' action='positive' pk=post.pk %}">
                                 <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
-                                 {% for tweets in retweets %}
+                                {% for tweets in retweets %}
                                    {% if tweets.current_post.id is post.id %}
                                         {{ tweets.retweeters.all.count }}
                                     {% endif %}
@@ -82,10 +82,10 @@
            {% endif%}
         {% endfor %}
     </div>
-    <div class="col-md-4" >
+    <div class="col-md-4" style="position:fixed; right:0px">
         <h3 style="color: #808080;">Suggestions</h3><br>
         {% for user in users %}
-            {% if not user in friends %}
+            {% if not user in following %}
                 <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}">
                     <h4>{{ user.get_full_name }}  <small>@{{ user.username }}</small></h4>
                 </a>
@@ -94,8 +94,8 @@
                 </a>
             {% endif %}
         {% endfor %}
-        <h3 style="color: #808080;">Followers</h3><br>
-        {% for friend in friends %}
+        <h3 style="color: #808080;">Following</h3><br>
+        {% for friend in following %}
             <a href="{% url 'accounts:view_profile_with_pk' pk=friend.pk %}">
                <h4>{{ friend.get_full_name }}  <small>@{{ friend.username }}</small></h4>
             </a>

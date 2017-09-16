@@ -13,12 +13,14 @@ class HomeView(TemplateView):
         users = User.objects.exclude(id=request.user.id)
         user = User.objects.get(id=request.user.id)
         friend, created = Friend.objects.get_or_create(current_user=request.user)
-        friends = friend.users.all()
+        following = friend.following.all()
+        followers = friend.followers.all()
         userpost = Post.objects.filter(user=user).order_by('-created')
         retweets = Retweets.objects.all()
         args = {
             'form':form, 'posts': posts,
-            'users':users, 'friends': friends,
+            'users':users, 'following': following,
+            'followers':followers,
             'userpost':userpost, 'retweets':retweets,
         }
         return render(request, self.template_name, args)
