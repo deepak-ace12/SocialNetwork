@@ -8,7 +8,7 @@
         <div class="container">
             <div class="col-md-4">
                 {% if user.userprofile.image %}
-                    <img src="{{ user.userprofile.image.url }}" class="img-rounded" width="240" height="240">
+                    <img src="{{ user.userprofile.image.url|default_if_none:'#' }}" class="img-rounded" width="240" height="240">
                 {% endif %}
                 <h4><b>{{ user.get_full_name }} </b><br> <small>@{{ user.username }}</small></h4>
                 <p><h5>{{user.userprofile.description }}</h5></p>
@@ -23,9 +23,12 @@
 
             <table style="width:100%">
                 <tr>
-                    <td colspan="3"><p style="float: left;"><img src="{{ post.user.userprofile.image.url }}"
+                    <td colspan="3"><p style="float: left;">
+                        {% if user.userprofile.image %}
+                        <img src="{{ post.user.userprofile.image.url|default_if_none:'#' }}"
                                                      height="25px" width="25px" border="1px" class="img-circle">&nbsp
                         </p>
+                        {% endif %}
                         <p><h6 ><b>{{ post.user.get_full_name }}</b> &nbsp <small>@{{ post.user.username }}
                         &nbsp {{ post.created }}
                 </small></h6></p>

@@ -42,14 +42,14 @@ class Friend(models.Model):
             current_user=current_user
         )
         recent_friend, created = cls.objects.get_or_create(
-            pk=new_friend.pk,current_user=new_friend
+            pk=new_friend.pk, current_user=new_friend
         )
 
         friend.following.remove(new_friend)
         recent_friend.followers.remove(current_user)
 
 class Retweets(models.Model):
-    current_post = models.ForeignKey(Post, related_name='user_post', null= True)
+    current_post = models.ForeignKey(Post, related_name='user_post', null=True)
     retweeters = models.ManyToManyField(User)
     posted_by = models.ForeignKey(User, related_name='post_owner', null=True)
 

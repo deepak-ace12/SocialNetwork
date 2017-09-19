@@ -34,6 +34,9 @@ urlpatterns = [
 
     url(r'^reset-password/complete/$', password_reset_complete,{
         'template_name': 'accounts/reset_password_complete.html'},
-        name='password_reset_complete')
+        name='password_reset_complete'),
+
+    url(r'^connection/(?P<pk>\d+)/(?P<action>.+)/$', views.view_connections, name='view_connections'),
+
 
 ]

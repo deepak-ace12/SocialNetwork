@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
-from home.models import Post
+from home.models import Post, Friend
 from accounts.forms import (
     RegistrationForm,
-    EditProfileForm
+    UserEditForm
 )
 
 from django.contrib.auth.models import User
@@ -25,18 +25,34 @@ def register(request):
         args = {'form': form}
         return render(request, 'accounts/reg_form.html', args)
 
+
 def view_profile(request, pk=None):
     if pk:
         user = User.objects.get(pk=pk)
     else:
         user = request.user
-    print(user.id)
     posts = Post.objects.all().order_by('-created')
     userpost = Post.objects.filter(user=user).order_by('-created')
-    args = {'user': user, 'posts':posts, 'userpost':userpost,}
+    args = {'user': user, 'posts':posts, 'userpost': userpost, }
     return render(request, 'accounts/profile.html', args)
 
+
 def edit_profile(request):
+    print(request.user.username)
+    if request.method == 'POST':
+        user = UserProfile.objects.get(user=request.user)
+        form = UserEditForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('accounts:view_profile'))
+    else:
+        user = UserProfile.objects.get(user=request.user)
+        form = UserEditForm(instance=user)
+        args = {'form': form}
+        return render(request, 'accounts/edit_profile.html', args)
+
+
+'''    
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
 
@@ -48,6 +64,7 @@ def edit_profile(request):
         args = {'form': form}
         return render(request, 'accounts/edit_profile.html', args)
 
+'''
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, instance=request.user)
@@ -63,3 +80,24 @@ def change_password(request):
 
         args = {'form': form}
         return render(request, 'accounts/change_password.html', args)
+
+
+def view_connections(request, pk=None, action=None):
+    if pk:
+        user = User.objects.get(pk=pk)
+    else:
+        user = request.user
+    friend, created = Friend.objects.get_or_create(current_user=request.user)
+    if action == 'followers':
+        connected_people = friend.followers.all()
+    elif action == 'following':
+        connected_people = friend.following.all()
+
+    followers = friend.followers.all()
+    following = friend.following.all()
+    userpost = Post.objects.filter(user=user).order_by('-created')
+    args = {
+        'user': user, 'connected_people': connected_people, 'userpost': userpost,
+        'followers': followers, 'following': following,
+    }
+    return render(request, 'accounts/connections.html', args)

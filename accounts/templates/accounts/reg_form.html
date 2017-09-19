@@ -4,7 +4,7 @@
     <div class="container">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form.as_ul }}
             <button class="button" type="submit">Submit</button>
         </form>
     </div>

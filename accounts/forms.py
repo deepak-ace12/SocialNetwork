@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import UserProfile
+
+from accounts.models import UserProfile
+
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -29,12 +31,8 @@ class RegistrationForm(UserCreationForm):
         return user
 
 
-class EditProfileForm(UserChangeForm):
+class UserEditForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
         fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('instance')
-        super(EditProfileForm, self).__init__(*args, **kwargs)
