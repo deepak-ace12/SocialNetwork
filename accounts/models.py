@@ -26,7 +26,6 @@ class UserProfile(models.Model):
         if self.image and hasattr(self.image, 'url'):
             return self.image.url
 
-
 def create_profile(sender, **kwargs):
     if kwargs['created']:
         user_profile = UserProfile.objects.create(user=kwargs['instance'])

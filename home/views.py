@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from home.forms import HomeForm
-from home.models import Post, Friend, Retweets
+from home.models import Post, Friend
 from django.contrib.auth.models import User
 
 class HomeView(TemplateView):
@@ -16,15 +16,13 @@ class HomeView(TemplateView):
         following = friend.following.all()
         followers = friend.followers.all()
         userpost = Post.objects.filter(user=user).order_by('-created')
-        retweets = Retweets.objects.all()
         args = {
-            'form':form, 'posts': posts,
-            'users':users, 'following': following,
-            'followers':followers,
-            'userpost':userpost, 'retweets':retweets,
+            'form': form, 'posts': posts,
+            'users': users, 'following': following,
+            'followers': followers,
+            'userpost': userpost,
         }
         return render(request, self.template_name, args)
-
 
     def post(self, request):
         form = HomeForm(request.POST)
@@ -49,10 +47,29 @@ def change_friends(request, operation, pk):
         Friend.lose_friend(request.user, new_friend)
     return redirect('home:home')
 
+
 def retweet(request, action, pk):
     post = Post.objects.get(pk=pk)
     if action == 'positive':
-        Retweets.retweet_positive(request.user, post)
+        Post.retweet_positive(request.user, post)
     elif action == 'negative':
-        Retweets.retweet_positive(request.user, post)
+        Post.retweet_negative(request.user, post)
+    return redirect('home:home')
+
+
+def retweet_profile(request, action, pk):
+    post = Post.objects.get(pk=pk)
+    if action == 'positive':
+        Post.retweet_positive(request.user, post)
+    elif action == 'negative':
+        Post.retweet_negative(request.user, post)
+    return redirect('accounts:view_profile')
+
+
+def likes(request, action, pk):
+    post = Post.objects.get(pk=pk)
+    if action == 'positive':
+        Post.like_positive(request.user, post)
+    elif action == 'negative':
+        Post.like_negative(request.user, post)
     return redirect('home:home')

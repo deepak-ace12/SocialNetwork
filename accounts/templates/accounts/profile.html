@@ -10,47 +10,95 @@
                 {% if user.userprofile.image %}
                     <img src="{{ user.userprofile.image.url|default_if_none:'#' }}" class="img-rounded" width="240" height="240">
                 {% endif %}
-                <h4><b>{{ user.get_full_name }} </b><br> <small>@{{ user.username }}</small></h4>
-                <p><h5>{{user.userprofile.description }}</h5></p>
-                <p>{{ user.email }}</p>
-                <p>Phone : {{ user.userprofile.phone }}</p>
-                <p>from : {{ user.userprofile.city }}</p>
-                <p>website : {{ user.userprofile.website }}</p>
+                <h4><b>{{ user.get_full_name }} </b><br> <small>
+                    <span class="glyphicon glyphicon-user" aria-hidden="true" style="color:grey">
+                        @{{ user.username }}</span></small></h4>
+                <p><h5><span class="glyphicon glyphicon-lock" aria-hidden="true" style="color:grey"></span>&nbsp
+                {{user.userprofile.description }}</h5></p>
+                <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="color:grey">
+                                </span>&nbsp{{ user.userprofile.city }}</p>
+                 <table style="width:70%">
+            <tr style="color: #696969;">
+                <th align="center"><h4><a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}" >Posts</a>
+                </h4></th>
+                <th align="center"><h4><a href="{% url 'accounts:view_connections' pk=user.pk action='followers' %}" >
+                    Followers</a>
+                </h4></th>
+                <th align="center"><h4><a href="{% url 'accounts:view_connections' pk=user.pk action='following' %}" >
+                    Following</a>
+                </h4></th>
+            </tr>
+            <tr style="color: #808080;"><td align="center"><b>
+                <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}" >{{ userpost.all.count }}</a></b></td>
+                <td align="center"><b>
+                    <a href="{% url 'accounts:view_connections' pk=user.pk action='followers' %}" >
+                        {{ followers.all.count }}</a>
+                </b></td>
+                <td align="center"><b><a href="{% url 'accounts:view_connections' pk=user.pk action='following' %}" >
+                    {{ following.all.count }}</a></b></td>
+            </tr>
+        </table>
+
             </div>
             <div class="col-md-4">
                 {% for post in userpost %}
                  <div>
 
-            <table style="width:100%">
-                <tr>
-                    <td colspan="3"><p style="float: left;">
-                        {% if user.userprofile.image %}
-                        <img src="{{ post.user.userprofile.image.url|default_if_none:'#' }}"
+            <table style="width:100%;">
+                    <tr>
+                        <td colspan="3">
+                            <p style="float: left;"><img src="{{ post.user.userprofile.image.url|default_if_none:'#'  }}"
                                                      height="25px" width="25px" border="1px" class="img-circle">&nbsp
-                        </p>
-                        {% endif %}
-                        <p><h6 ><b>{{ post.user.get_full_name }}</b> &nbsp <small>@{{ post.user.username }}
-                        &nbsp {{ post.created }}
-                </small></h6></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                         <h5>{{ post.post }}</h5><br>
-                    </td>
-                </tr>
-                <tr style="color: #808080;">
-                    <td colspan="1" align="center">
-                            <span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span>
-                    </td>
-                    <td colspan="1" align="center">
-                            <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
-                    </td>
-                    <td colspan="1" align="center">
-                            <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
-                    </td><br>
-                </tr>
-            </table>
+                            </p>
+                            <p>
+                                <h6 ><b>{{ post.user.get_full_name }}</b> &nbsp <small>@{{ post.user.username }}
+                                        &nbsp {{ post.created }}</small></h6>
+                            </p>
+                        </td>
+                     </tr>
+                    <tr>
+                        <td colspan="3" style="font-family: Arial Unicode MS, Times, serif;">
+                            <h5>{{ post.post }}</h5><br>
+                        </td>
+                     </tr>
+                    <tr style="color: #808080;">
+                        <td colspan="1" align="center" style="color:red position:fixed">
+
+                            {% if user in post.likers.all %}
+                            <a href="{% url 'home:like' action='negative' pk=post.pk %}">
+                                <span class="glyphicon glyphicon-heart" aria-hidden="true" style="color:red">
+                                </span></a>
+                            {% else %}
+                                <a href="{% url 'home:like' action='positive' pk=post.pk %}">
+                                 <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">
+                                 </span></a>
+                            {% endif %}
+                                 {% if post.likers.all.count %}
+                                    &nbsp{{ post.likers.all.count }}
+                                 {% endif %}
+
+                        </td>
+                        <td colspan="1" align="center" style="color:#5CB85C position:fixed">
+                            {% if user in post.retweeters.all %}
+                            <a href="{% url 'home:retweet' action='negative' pk=post.pk %}">
+                                <span class="glyphicon glyphicon-retweet" aria-hidden="true" style="color:#5CB85C">
+                                </span></a>
+                            {% else %}
+                                <a href="{% url 'home:retweet' action='positive' pk=post.pk %}">
+                                 <span class="glyphicon glyphicon-retweet" aria-hidden="true">
+                                 </span></a>
+                            {% endif %}
+                                 {% if post.retweeters.all.count %}
+                                    &nbsp{{ post.retweeters.all.count }}
+                                 {% endif %}
+                        </td>
+                        <td colspan="1" align="center">
+                             <a href="{% url 'home:home' %}">
+                                <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+                             </a>
+                        </td><br>
+                    </tr>
+                </table>
             </div>
         {% endfor %}
 

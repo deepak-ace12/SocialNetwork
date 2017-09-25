@@ -12,14 +12,21 @@
             <tr style="color: #696969;">
                 <th align="center"><h4><a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}" >Posts</a>
                 </h4></th>
-                <th align="center"><h4><a href="{% url 'accounts:view_connections' pk=user.pk action='followers' %}" >Followers</a>
+                <th align="center"><h4><a href="{% url 'accounts:view_connections' pk=user.pk action='followers' %}" >
+                    Followers</a>
                 </h4></th>
-                <th align="center"><h4>Following</h4></th>
+                <th align="center"><h4><a href="{% url 'accounts:view_connections' pk=user.pk action='following' %}" >
+                    Following</a>
+                </h4></th>
             </tr>
             <tr style="color: #808080;"><td align="center"><b>
                 <a href="{% url 'accounts:view_profile_with_pk' pk=user.pk %}" >{{ userpost.all.count }}</a></b></td>
-                <td align="center"><b>{{ followers.all.count }}</b></td>
-                <td align="center"><b>{{ following.all.count }}</b></td>
+                <td align="center"><b>
+                    <a href="{% url 'accounts:view_connections' pk=user.pk action='followers' %}" >
+                        {{ followers.all.count }}</a>
+                </b></td>
+                <td align="center"><b><a href="{% url 'accounts:view_connections' pk=user.pk action='following' %}" >
+                    {{ following.all.count }}</a></b></td>
             </tr>
         </table>
     </div>
@@ -32,7 +39,7 @@
                 <img src="{{ people.userprofile.image.url }}" class="img-rounded" width="140" height="140">
             {% endif %}
             <h4><b>{{ people.get_full_name }} </b><br> <small>@{{ people.username }}</small></h4>
-                <p><h5>{{ people.userprofile.description }}</h5></p></div>
+                <p><h5>{{ people.userprofile.description }}</h5></p></div><br>
         </div>
     </div>
 {% endfor %}

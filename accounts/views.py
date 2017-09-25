@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from home.models import Post, Friend
 from accounts.forms import (
@@ -7,7 +7,7 @@ from accounts.forms import (
 )
 
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
 from accounts.models import UserProfile
@@ -33,7 +33,13 @@ def view_profile(request, pk=None):
         user = request.user
     posts = Post.objects.all().order_by('-created')
     userpost = Post.objects.filter(user=user).order_by('-created')
-    args = {'user': user, 'posts':posts, 'userpost': userpost, }
+    friend, created = Friend.objects.get_or_create(current_user=request.user)
+    following = friend.following.all()
+    followers = friend.followers.all()
+    args = {'user': user, 'posts':posts,
+            'userpost': userpost, 'followers': followers,
+            'following': following
+            }
     return render(request, 'accounts/profile.html', args)
 
 
@@ -87,7 +93,7 @@ def view_connections(request, pk=None, action=None):
         user = User.objects.get(pk=pk)
     else:
         user = request.user
-    friend, created = Friend.objects.get_or_create(current_user=request.user)
+    friend = Friend.objects.get(current_user=request.user)
     if action == 'followers':
         connected_people = friend.followers.all()
     elif action == 'following':
