@@ -44,7 +44,6 @@ def view_profile(request, pk=None):
 
 
 def edit_profile(request):
-    print(request.user.username)
     if request.method == 'POST':
         user = UserProfile.objects.get(user=request.user)
         form = UserEditForm(request.POST, request.FILES, instance=user)
